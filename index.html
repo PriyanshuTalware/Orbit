@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>Orbit — Infinite Canvas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <button class="icon-btn mobile-only" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+    <div class="brand"><span class="brand-mark">◉</span><span>orbit</span><small>infinite workspace</small></div>
+    <div class="crumb"><span id="bookTitle">My workspace</span><span class="slash">/</span><strong id="pageTitle">Untitled canvas</strong></div>
+    <div class="top-actions">
+      <span class="save-state" id="saveState">All changes saved</span>
+      <button class="soft-btn" id="undoBtn" title="Undo (Ctrl+Z)">↶</button>
+      <button class="soft-btn" id="redoBtn" title="Redo (Ctrl+Shift+Z)">↷</button>
+      <button class="soft-btn" id="themeBtn" title="Toggle theme">☾</button>
+      <button class="primary-btn" id="exportBtn">Export ↗</button>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="side-top">
+      <div class="workspace-label">WORKSPACE</div>
+      <button class="new-book" id="newBookBtn"><span>＋</span> New notebook</button>
+    </div>
+    <div class="side-section">
+      <div class="section-heading">YOUR NOTEBOOKS <button id="renameBookBtn" title="Rename notebook">···</button></div>
+      <div id="bookList" class="book-list"></div>
+    </div>
+    <div class="side-section page-section">
+      <div class="section-heading">PAGES <button id="newPageBtn" title="New page">＋</button></div>
+      <div id="pageList" class="page-list"></div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="storage-indicator"><span class="pulse"></span><div><b>Saved on this device</b><small>Private · Local storage</small></div></div>
+      <button class="side-link" id="helpBtn">ⓘ <span>Shortcuts & help</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="canvas-head">
+      <div class="canvas-heading"><span class="eyebrow">CANVAS</span><span class="canvas-name" id="canvasName">Untitled canvas</span></div>
+      <div class="canvas-controls">
+        <button class="mini-btn" id="bgBtn">▦ <span>Background</span></button>
+        <button class="mini-btn" id="fitBtn">⤢ <span>Fit</span></button>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+      </div>
+    </div>
+
+    <div class="work-area" id="workArea">
+      <div class="floating-toolbar" id="toolbar">
+        <button class="tool active" data-tool="select" title="Select (V)">↖</button>
+        <button class="tool" data-tool="hand" title="Pan (H)">✋</button>
+        <span class="tool-divider"></span>
+        <button class="tool" data-tool="pen" title="Pen (P)">✎</button>
+        <button class="tool" data-tool="highlighter" title="Highlighter (I)">▰</button>
+        <button class="tool" data-tool="eraser" title="Eraser (E)">⌫</button>
+        <span class="tool-divider"></span>
+        <button class="tool" data-tool="text" title="Text (T)">T</button>
+        <button class="tool" data-tool="rect" title="Rectangle (R)">□</button>
+        <button class="tool" data-tool="ellipse" title="Ellipse (O)">○</button>
+        <button class="tool" data-tool="line" title="Line (L)">／</button>
+        <button class="tool" data-tool="arrow" title="Arrow (A)">➜</button>
+        <span class="tool-divider"></span>
+        <button class="tool" id="imageTool" title="Add image">▧</button>
+      </div>
+
+      <div class="properties" id="properties">
+        <div class="property-row"><span class="prop-label">COLOR</span><div class="swatches" id="swatches">
+          <button class="swatch selected" data-color="#27324a" style="--swatch:#27324a"></button>
+          <button class="swatch" data-color="#6d5ce8" style="--swatch:#6d5ce8"></button>
+          <button class="swatch" data-color="#e46c86" style="--swatch:#e46c86"></button>
+          <button class="swatch" data-color="#e8a23a" style="--swatch:#e8a23a"></button>
+          <button class="swatch" data-color="#35a88b" style="--swatch:#35a88b"></button>
+          <button class="swatch" data-color="#3e8ed0" style="--swatch:#3e8ed0"></button>
+          <input type="color" id="customColor" value="#27324a" title="Custom color">
+        </div></div>
+        <div class="property-row"><label class="prop-label" for="sizeRange">SIZE <b id="sizeValue">3</b></label><input id="sizeRange" type="range" min="1" max="32" value="3"></div>
+        <div class="property-row"><label class="prop-label" for="opacityRange">OPACITY <b id="opacityValue">100%</b></label><input id="opacityRange" type="range" min="10" max="100" value="100"></div>
+      </div>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="canvas"></canvas>
+        <div class="empty-hint" id="emptyHint"><div class="hint-icon">✦</div><b>A little space for big ideas.</b><span>Pick a tool and start creating anywhere.</span></div>
+      </div>
+
+      <div class="bottom-left"><span class="status-dot"></span><span id="toolStatus">Select tool</span><span class="status-sep">·</span><span id="coords">0, 0</span></div>
+      <div class="bottom-right"><button class="round-btn" id="zoomOut">−</button><button class="round-btn" id="zoomIn">＋</button></div>
+    </div>
+  </main>
+</div>
+
+<div class="popover hidden" id="backgroundMenu">
+  <b>Canvas background</b>
+  <button data-bg="dots">⠿ <span>Dot grid</span><i>●</i></button>
+  <button data-bg="grid">▦ <span>Square grid</span><i>●</i></button>
+  <button data-bg="lines">☰ <span>Lined paper</span><i>●</i></button>
+  <button data-bg="blank">□ <span>Blank</span><i>●</i></button>
+</div>
+<div class="popover hidden" id="exportMenu">
+  <b>Export your work</b>
+  <button id="pngExport">▧ <span>Download as PNG</span></button>
+  <button id="pdfExport">▤ <span>Print / Save as PDF</span></button>
+  <button id="jsonExport">⇩ <span>Backup workspace (.json)</span></button>
+  <label class="import-label">⇧ <span>Import workspace (.json)</span><input type="file" id="jsonImport" accept=".json,application/json"></label>
+</div>
+<div class="popover hidden" id="helpMenu">
+  <b>Quick shortcuts</b>
+  <p><kbd>V</kbd> Select &nbsp; <kbd>H</kbd> Pan &nbsp; <kbd>P</kbd> Pen</p>
+  <p><kbd>T</kbd> Text &nbsp; <kbd>E</kbd> Eraser &nbsp; <kbd>R</kbd> Rectangle</p>
+  <p><kbd>Ctrl</kbd> + <kbd>Z</kbd> Undo</p>
+  <p><kbd>Space</kbd> + drag to pan</p>
+  <p><kbd>Wheel</kbd> / pinch to zoom</p>
+  <p><kbd>Delete</kbd> Remove selected item</p>
+  <small>Tip: Use the hand tool or hold Space to move around your infinite canvas.</small>
+</div>
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><b id="modalTitle">New notebook</b><button id="modalClose">×</button></div>
+    <p id="modalDesc">Give your workspace a name.</p>
+    <input id="modalInput" maxlength="48" placeholder="Notebook name">
+    <div class="modal-actions"><button class="soft-btn" id="modalCancel">Cancel</button><button class="primary-btn" id="modalConfirm">Create</button></div>
+  </div>
+</div>
+<input type="file" id="imageInput" accept="image/*" hidden>
+<script src="app.js"></script>
+</body>
+</html>
