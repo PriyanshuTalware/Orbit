@@ -2,10 +2,7 @@
 
 A browser-based infinite dot-grid notebook and drawing workspace.
 
-## Run it
-1. Extract the ZIP.
-2. Open `index.html` in a modern browser.
-3. Start drawing. Changes are saved locally in that browser using IndexedDB.
+Start drawing or writing. Changes are saved locally in that browser using IndexedDB.
 
 For Android/WebCode, import all three files into one project and keep their names and relative paths unchanged.
 
